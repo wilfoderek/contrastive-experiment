@@ -2,13 +2,29 @@
 
 ## 1. El Corpus Contrastivo: TripLegal-CL
 
-Presentamos **TripLegal-CL**, un corpus especializado diseñado para el entrenamiento de modelos de recuperación de información en el dominio legal latinoamericano.
+Presentamos **TripLegal-CL**, un recurso masivo y especializado para el entrenamiento de modelos de recuperación de información en el dominio legal latinoamericano. Este dataset consolida **600,000 tripletas de entrenamiento** enriquecidas semánticamente.
 
-### Metodología de Construcción
-El proceso de creación del dataset siguió un pipeline de tres etapas rigurosas:
-1.  **Adquisición:** Recolección de documentos legales desde repositorios públicos oficiales de varios países de Latinoamérica y organismos internacionales.
-2.  **Normalización:** Conversión y limpieza de los documentos originales (PDF/HTML) a texto plano estructurado.
-3.  **Procesamiento con LLM (Gemini 2.0):** Se utilizó el modelo **Gemini 2.0** de Google para el procesamiento semántico, garantizando una alta calidad en la generación de tripletas y la minería de negativos difíciles.
+[![Hugging Face](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Request%20Access-orange)](https://huggingface.co/datasets/wilfredomartel/spanish-legal-dataset)
+
+### 🛠️ Metodología de Construcción
+La creación del corpus siguió un *pipeline* riguroso de tres etapas para garantizar la calidad de los datos:
+
+1.  **Adquisición y Normalización:** Se recolectaron **148,637 documentos legales** desde repositorios públicos oficiales. Los archivos originales (PDF/HTML) fueron convertidos a texto plano estructurado y limpiados de ruido.
+2.  **Minería Semántica con LLM (Gemini 2.0):** Se utilizó el modelo **Gemini 2.0** de Google para generar consultas sintéticas y minar pares positivos/negativos.
+3.  **Enriquecimiento (Scoring):** Cada tripleta incluye puntuaciones de relevancia (*scores*) asignadas por el LLM, lo que permite su uso no solo para aprendizaje contrastivo, sino también para destilación de conocimiento.
+
+### 🧬 Estructura del Dato
+El dataset se distribuye en formato JSONL. A diferencia de datasets estándar, **TripLegal-CL** proporciona múltiples positivos/negativos y puntuaciones de confianza:
+
+```json
+{
+  "query": "Texto de la consulta jurídica o pregunta legal...",
+  "pos": ["Documento relevante 1...", "Documento relevante 2..."],
+  "neg": ["Hard Negative 1 (jurisprudencia similar pero no relevante)..."],
+  "pos_score": [82.0, 81.1],
+  "neg_score": [0.64, 0.60]
+}
+```
 
 ### Distribución Geográfica y Volumen
 El corpus consta de un total de **148,637 documentos**, con una representación mayoritaria de legislación y jurisprudencia de Ecuador, complementada con datos de Colombia, México, Perú, Bolivia y la Corte Interamericana de Derechos Humanos (CIDH).
@@ -26,7 +42,7 @@ El corpus consta de un total de **148,637 documentos**, con una representación 
 > **Nota:** La diversidad geográfica permite que los modelos entrenados con *TripLegal-CL* aprendan variaciones terminológicas del español jurídico en diferentes jurisdicciones, mejorando su capacidad de generalización.
 
 
-## 2. Evaluación de Línea Base (Zero-Shot)
+## 2. Evaluación de Línea Base 
 
 Para establecer un punto de partida riguroso, evaluamos el desempeño *out-of-the-box* de tres arquitecturas del estado del arte antes de cualquier adaptación al dominio.
 
@@ -40,7 +56,7 @@ Para establecer un punto de partida riguroso, evaluamos el desempeño *out-of-th
 *   **Dimensión:** 60,000 consultas (*queries*) con sus respectivos documentos relevantes y distractores.
 *   **Métrica Principal:** NDCG@10 (Normalized Discounted Cumulative Gain).
 
-## 3. ⚙️ Fine-Tuning: Adaptación de Dominio
+## 3. ⚙️ Evaluación después del finetuning en el Dominio Legal
 
 La fase crítica del experimento consiste en la especialización de los modelos utilizando el corpus **TripLegal-CL**.
 
