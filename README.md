@@ -22,13 +22,12 @@ La siguiente tabla destaca la mejora en las métricas principales de recuperaci�
 | | **Fine-tuned** | **0.9438** | **0.9325** | **0.9060** |
 | | *Mejora* | *+6.37%* | *+6.98%* | *+8.32%* |
 
-> **Nota:** La fila *Mejora* indica el incremento absoluto en puntos porcentuales.
 
 ### 💡 Análisis de los Resultados
 
-1.  **Nuevo Estado del Arte (SOTA):** El modelo **Gemma Embeddings (Fine-tuned)** alcanza un rendimiento excepcional con un **NDCG@10 de 0.9438** y un **Accuracy@1 del 90.60%**, demostrando la potencia de los LLMs generativos adaptados a tareas de embedding.
-2.  **Mayor Capacidad de Adaptación:** El modelo **BGE-M3** es el que más se beneficia del corpus, experimentando el salto de calidad más grande (una mejora de **+12.05 puntos** en Accuracy@1). Esto sugiere que la arquitectura de BGE es altamente plástica y receptiva al dominio legal en español.
-3.  **Consistencia:** Todos los modelos superaron significativamente sus líneas base, validando la calidad y la dificultad de los ejemplos positivos/negativos del corpus generado.
+1.  **Mejor Desempeño Global:** Gemma Embeddings (Fine-tuned) obtiene los mejores resultados en  tareas de recuperación  (**NDCG@10 de 0.94**).
+2.  **Mayor Capacidad de Aprendizaje:** BGE-M3 presenta la evolución más notable tras el ajuste (+12.05 pp en Accuracy@1). A pesar de un inicio más bajo, su arquitectura demostró ser la más eficiente asimilando la terminología jurídica del corpus.
+3.  **Efectividad del Corpus:** El incremento generalizado de rendimiento en todas las métricas y modelos confirma que los datos de entrenamiento aportan la señal semántica necesaria para especializar modelos genéricos en la parte legal en español.
 
 ---
 
