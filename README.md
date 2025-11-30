@@ -16,11 +16,11 @@ La siguiente tabla destaca la mejora en las métricas principales de recuperaci�
 | | | | | |
 | **BGE-M3** | *Base* | 0.8127 | 0.7901 | 0.7407 |
 | | **Fine-tuned** | **0.9066** | **0.8927** | **0.8612** |
-| | *Mejora* | *+11.5%* | *+12.9%* | *+16.2%* |
+| | *Mejora* | *+9.39%* | *+10.26%* | *+12.05%* |
 | | | | | |
 | **Gemma Embeddings** | *Base* | 0.8801 | 0.8627 | 0.8228 |
 | | **Fine-tuned** | **0.9438** | **0.9325** | **0.9060** |
-| | *Mejora* | *+7.2%* | *+8.1%* | *+10.1%* |
+| | *Mejora* | *+6.37%* | *+6.98%* | *+8.32%* |
 
 > **Observación:** El modelo **BGE-M3** es el que más se beneficia del corpus legal, mostrando la mayor ganancia relativa. Sin embargo, **Gemma Embeddings (Fine-tuned)** establece el nuevo estado del arte (SOTA) en este benchmark con un NDCG@10 de **0.9438**.
 
