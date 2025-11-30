@@ -1,16 +1,16 @@
 ## Corpus Legal y Aprendizaje Contrastivo para Recuperación de Información
 
-## 1. 📚 El Corpus Contrastivo: TripLegal-CL
+## 1. El Corpus Contrastivo: TripLegal-CL
 
 Presentamos **TripLegal-CL**, un corpus especializado diseñado para el entrenamiento de modelos de recuperación de información en el dominio legal latinoamericano.
 
-### 🛠️ Metodología de Construcción
+### Metodología de Construcción
 El proceso de creación del dataset siguió un pipeline de tres etapas rigurosas:
 1.  **Adquisición:** Recolección de documentos legales desde repositorios públicos oficiales de varios países de Latinoamérica y organismos internacionales.
 2.  **Normalización:** Conversión y limpieza de los documentos originales (PDF/HTML) a texto plano estructurado.
 3.  **Procesamiento con LLM (Gemini 2.0):** Se utilizó el modelo **Gemini 2.0** de Google para el procesamiento semántico, garantizando una alta calidad en la generación de tripletas y la minería de negativos difíciles.
 
-### 🌎 Distribución Geográfica y Volumen
+### Distribución Geográfica y Volumen
 El corpus consta de un total de **148,637 documentos**, con una representación mayoritaria de legislación y jurisprudencia de Ecuador, complementada con datos de Colombia, México, Perú, Bolivia y la Corte Interamericana de Derechos Humanos (CIDH).
 
 | País / Fuente | # Documentos | % del Total |
@@ -26,7 +26,7 @@ El corpus consta de un total de **148,637 documentos**, con una representación 
 > **Nota:** La diversidad geográfica permite que los modelos entrenados con *TripLegal-CL* aprendan variaciones terminológicas del español jurídico en diferentes jurisdicciones, mejorando su capacidad de generalización.
 
 
-## 2. 📉 Evaluación de Línea Base (Zero-Shot)
+## 2. Evaluación de Línea Base (Zero-Shot)
 
 Para establecer un punto de partida riguroso, evaluamos el desempeño *out-of-the-box* de tres arquitecturas del estado del arte antes de cualquier adaptación al dominio.
 
@@ -50,13 +50,13 @@ Implementamos un esquema de **Aprendizaje Contrastivo** (Contrastive Learning) s
 *   **Función de Pérdida:** `MultipleNegativesRankingLoss` (MNRL) con escala de temperatura aprendible.
 *   **Datos de Entrada:** Tripletas generadas y curadas semánticamente (gracias al procesamiento con Gemini 2.0 en la fase de construcción del corpus).
 
-## 4. 📊 Resultados Experimentales
+## 4. Resultados Experimentales
 
 Evaluamos la eficacia del corpus de aprendizaje contrastivo comparando el rendimiento "Zero-shot" (línea base) frente a los modelos re-entrenados (*Fine-tuned*) en el dominio legal.
 
 Todas las métricas se reportan sobre el conjunto de prueba `legalspanish-eval` (60k *queries*).
 
-### 🏆 Resumen de Impacto (Performance Gains)
+### Resumen de Impacto (Performance Gains)
 
 La siguiente tabla destaca la mejora en las métricas principales de recuperación (**NDCG@10** y **MRR@10**) tras el entrenamiento contrastivo.
 
@@ -75,7 +75,7 @@ La siguiente tabla destaca la mejora en las métricas principales de recuperaci�
 | | *Mejora* | *+6.37%* | *+6.98%* | *+8.32%* |
 
 
-### 💡 Análisis de los Resultados
+### Análisis de los Resultados
 
 1.  **Mejor Desempeño Global:** Gemma Embeddings (Fine-tuned) obtiene los mejores resultados en  tareas de recuperación  (**NDCG@10 de 0.94**).
 2.  **Mayor Capacidad de Aprendizaje:** BGE-M3 presenta la evolución más notable tras el ajuste (+12.05 pp en Accuracy@1). A pesar de un inicio más bajo, su arquitectura demostró ser la más eficiente asimilando la terminología jurídica del corpus.
@@ -83,7 +83,7 @@ La siguiente tabla destaca la mejora en las métricas principales de recuperaci�
 
 ---
 
-### 📉 Desglose Detallado por Modelo
+### Desglose Detallado por Modelo
 
 A continuación se presentan las métricas completas (Accuracy, Precision, Recall, NDCG, MRR, MAP).
 
@@ -119,3 +119,13 @@ Comparativa entre el modelo original y `wilfredomartel/embeddinggemma-300m-legal
 | **NDCG@10** | 0.8801 | **0.9438** | +0.0637 |
 | **MRR@10** | 0.8627 | **0.9325** | +0.0698 |
 | **MAP@100** | 0.8645 | **0.9333** | +0.0688 |
+
+
+## 5. Cita
+Si utiliza TripLegal-CL o reproduce estos experimentos, por favor cite nuestro trabajo:
+@article{TripLegalCL202X,
+  title={TripLegal-CL: A Contrastive Learning Corpus for Legal Information Retrieval in Spanish},
+  author={Tu Apellido, Nombre and Coautores},
+  journal={Procesamiento del Lenguaje Natural (SEPLN)},
+  year={202X}
+}
