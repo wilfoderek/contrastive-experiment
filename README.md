@@ -58,7 +58,7 @@ Comparativa entre el modelo original y `wilfredomartel/bge-m3-es-legal-v3`. Este
 | **MAP@100** | 0.7930 | **0.8942** | +0.1012 |
 
 #### 3. Google Gemma Embeddings
-Comparativa entre el modelo base y la versión adaptada con 100k pasos (`Gema embedding 100k`).
+Comparativa entre el modelo original y `wilfredomartel/embeddinggemma-300m-legal-spanish-100k`. Este modelo obtiene los mejores resultados en  tareas de recuperación  (**NDCG@10 de 0.94**)
 
 | Métrica | Base (Zero-shot) | Fine-tuned (Legal) | Δ (Dif) |
 | :--- | :---: | :---: | :---: |
