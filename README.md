@@ -1,4 +1,56 @@
-## 📊 Resultados Experimentales
+## Corpus Legal y Aprendizaje Contrastivo para Recuperación de Información
+
+## 1. 📚 El Corpus Contrastivo: TripLegal-CL
+
+Presentamos **TripLegal-CL**, un corpus especializado diseñado para el entrenamiento de modelos de recuperación de información en el dominio legal latinoamericano.
+
+### 🛠️ Metodología de Construcción
+El proceso de creación del dataset siguió un pipeline de tres etapas rigurosas:
+1.  **Adquisición:** Recolección de documentos legales desde repositorios públicos oficiales de varios países de Latinoamérica y organismos internacionales.
+2.  **Normalización:** Conversión y limpieza de los documentos originales (PDF/HTML) a texto plano estructurado.
+3.  **Procesamiento con LLM (Gemini 2.0):** Se utilizó el modelo **Gemini 2.0** de Google para el procesamiento semántico, garantizando una alta calidad en la generación de tripletas y la minería de negativos difíciles.
+
+### 🌎 Distribución Geográfica y Volumen
+El corpus consta de un total de **148,637 documentos**, con una representación mayoritaria de legislación y jurisprudencia de Ecuador, complementada con datos de Colombia, México, Perú, Bolivia y la Corte Interamericana de Derechos Humanos (CIDH).
+
+| País / Fuente | # Documentos | % del Total |
+| :--- | :---: | :---: |
+| **Ecuador** | 77,597 | 52.2% |
+| **Colombia** | 30,835 | 20.7% |
+| **México** | 17,650 | 11.9% |
+| **Perú** | 12,000 | 8.1% |
+| **Bolivia** | 10,000 | 6.7% |
+| **CIDH** | 555 | 0.4% |
+| **TOTAL** | **148,637** | **100.0%** |
+
+> **Nota:** La diversidad geográfica permite que los modelos entrenados con *TripLegal-CL* aprendan variaciones terminológicas del español jurídico en diferentes jurisdicciones, mejorando su capacidad de generalización.
+
+
+## 2. 📉 Evaluación de Línea Base (Zero-Shot)
+
+Para establecer un punto de partida riguroso, evaluamos el desempeño *out-of-the-box* de tres arquitecturas del estado del arte antes de cualquier adaptación al dominio.
+
+**Modelos Evaluados:**
+1.  **Multilingual E5-Large:** Un modelo denso robusto para tareas generales.
+2.  **BAAI BGE-M3:** Conocido por su capacidad multilingüe y soporte de contextos largos.
+3.  **Google Gemma Embeddings:** Basado en la arquitectura de LLM generativo, evaluando su capacidad semántica intrínseca.
+
+**Protocolo Experimental:**
+*   **Conjunto de Prueba:** `wilfredomartel/spanish-legal-dataset (huggingface - solicitar acceso a dataset)`
+*   **Dimensión:** 60,000 consultas (*queries*) con sus respectivos documentos relevantes y distractores.
+*   **Métrica Principal:** NDCG@10 (Normalized Discounted Cumulative Gain).
+
+## 3. ⚙️ Fine-Tuning: Adaptación de Dominio
+
+La fase crítica del experimento consiste en la especialización de los modelos utilizando el corpus **TripLegal-CL**.
+
+### Estrategia de Entrenamiento
+Implementamos un esquema de **Aprendizaje Contrastivo** (Contrastive Learning) supervisado. El objetivo es minimizar la distancia vectorial entre la consulta jurídica y su ley/sentencia correcta, mientras se maximiza la distancia con documentos confusos (*hard negatives*).
+
+*   **Función de Pérdida:** `MultipleNegativesRankingLoss` (MNRL) con escala de temperatura aprendible.
+*   **Datos de Entrada:** Tripletas generadas y curadas semánticamente (gracias al procesamiento con Gemini 2.0 en la fase de construcción del corpus).
+
+## 4. 📊 Resultados Experimentales
 
 Evaluamos la eficacia del corpus de aprendizaje contrastivo comparando el rendimiento "Zero-shot" (línea base) frente a los modelos re-entrenados (*Fine-tuned*) en el dominio legal.
 
