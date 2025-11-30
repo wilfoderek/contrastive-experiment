@@ -12,7 +12,7 @@ La siguiente tabla destaca la mejora en las m√©tricas principales de recuperaci√
 | :--- | :--- | :---: | :---: | :---: |
 | **Multilingual E5-Large** | *Base* | 0.8296 | 0.8078 | 0.7594 |
 | | **Fine-tuned** | **0.8870** | **0.8709** | **0.8351** |
-| | *Mejora* | *+6.9%* | *+7.8%* | *+9.9%* |
+| | *Mejora* | *+5.74%* | *+6.31%* | *+7.57%* |
 | | | | | |
 | **BGE-M3** | *Base* | 0.8127 | 0.7901 | 0.7407 |
 | | **Fine-tuned** | **0.9066** | **0.8927** | **0.8612** |
