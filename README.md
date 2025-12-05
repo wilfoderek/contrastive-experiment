@@ -139,9 +139,4 @@ Comparativa entre el modelo original y `wilfredomartel/embeddinggemma-300m-legal
 
 ## 5. Cita
 Si utiliza TripLegal-CL o reproduce estos experimentos, por favor cite nuestro trabajo:
-@article{TripLegalCL202X,
-  title={TripLegal-CL: A Contrastive Learning Corpus for Legal Information Retrieval in Spanish},
-  author={Tu Apellido, Nombre and Coautores},
-  journal={Procesamiento del Lenguaje Natural (SEPLN)},
-  year={202X}
-}
+
