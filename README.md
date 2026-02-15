@@ -1,142 +1,109 @@
-## Corpus Legal y Aprendizaje Contrastivo para Recuperación de Información
+# TripLegal-CL: A Multi-Jurisdictional Spanish Legal Corpus for Contrastive Training of Dense Retrieval Models
 
-## 1. El Corpus Contrastivo: TripLegal-CL
+This repository contains the complete experimental pipeline for the paper:
 
-Presentamos **TripLegal-CL**, un recurso masivo y especializado para el entrenamiento de modelos de recuperación de información en el dominio legal latinoamericano. Este dataset consolida **600,000 tripletas de entrenamiento** enriquecidas semánticamente.
-
-[![Hugging Face](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Request%20Access-orange)](https://huggingface.co/datasets/wilfredomartel/spanish-legal-dataset)
-
-### 🛠️ Metodología de Construcción
-La creación del corpus siguió un *pipeline* riguroso de tres etapas para garantizar la calidad de los datos:
-
-1.  **Adquisición y Normalización:** Se recolectaron **148,637 documentos legales** desde repositorios públicos oficiales. Los archivos originales (PDF/HTML) fueron convertidos a texto plano estructurado y limpiados de ruido.
-2.  **Minería Semántica con LLM (Gemini 2.0):** Se utilizó el modelo **Gemini 2.0** de Google para generar consultas sintéticas y minar pares positivos/negativos.
-3.  **Enriquecimiento (Scoring):** Cada tripleta incluye puntuaciones de relevancia (*scores*) asignadas por el LLM, lo que permite su uso no solo para aprendizaje contrastivo, sino también para destilación de conocimiento.
-
-### 🧬 Estructura del Dato
-El dataset se distribuye en formato JSONL. A diferencia de datasets estándar, **TripLegal-CL** proporciona múltiples positivos/negativos y puntuaciones de confianza:
-
-```json
-{
-  "query": "Texto de la consulta jurídica o pregunta legal...",
-  "pos": ["Documento relevante 1...", "Documento relevante 2..."],
-  "neg": ["Hard Negative 1 (jurisprudencia similar pero no relevante)..."],
-  "pos_score": [82.0, 81.1],
-  "neg_score": [0.64, 0.60]
-}
-```
-
-### Distribución Geográfica y Volumen
-El corpus consta de un total de **148,637 documentos**, con una representación mayoritaria de legislación y jurisprudencia de Ecuador, complementada con datos de Colombia, México, Perú, Bolivia y la Corte Interamericana de Derechos Humanos (CIDH).
-
-| País / Fuente | # Documentos | % del Total |
-| :--- | :---: | :---: |
-| **Ecuador** | 77,597 | 52.2% |
-| **Colombia** | 30,835 | 20.7% |
-| **México** | 17,650 | 11.9% |
-| **Perú** | 12,000 | 8.1% |
-| **Bolivia** | 10,000 | 6.7% |
-| **CIDH** | 555 | 0.4% |
-| **TOTAL** | **148,637** | **100.0%** |
-
-> **Nota:** La diversidad geográfica permite que los modelos entrenados con *TripLegal-CL* aprendan variaciones terminológicas del español jurídico en diferentes jurisdicciones, mejorando su capacidad de generalización.
-
-
-## 2. Evaluación de Línea Base 
-
-Para establecer un punto de partida riguroso, evaluamos el desempeño *out-of-the-box* de tres arquitecturas del estado del arte antes de cualquier adaptación al dominio.
-
-**Modelos Evaluados:**
-1.  **Multilingual E5-Large:** Un modelo denso robusto para tareas generales.
-2.  **BAAI BGE-M3:** Conocido por su capacidad multilingüe y soporte de contextos largos.
-3.  **Google Gemma Embeddings:** Basado en la arquitectura de LLM generativo, evaluando su capacidad semántica intrínseca.
-
-**Protocolo Experimental:**
-*   **Conjunto de Prueba:** `wilfredomartel/spanish-legal-dataset (huggingface - solicitar acceso a dataset)`
-*   **Dimensión:** 60,000 consultas (*queries*) con sus respectivos documentos relevantes y distractores.
-*   **Métrica Principal:** NDCG@10 (Normalized Discounted Cumulative Gain).
-
-## 3. ⚙️ Evaluación después del finetuning en el Dominio Legal
-
-La fase crítica del experimento consiste en la especialización de los modelos utilizando el corpus **TripLegal-CL**.
-
-### Estrategia de Entrenamiento
-Implementamos un esquema de **Aprendizaje Contrastivo** (Contrastive Learning) supervisado. El objetivo es minimizar la distancia vectorial entre la consulta jurídica y su ley/sentencia correcta, mientras se maximiza la distancia con documentos confusos (*hard negatives*).
-
-*   **Función de Pérdida:** `MultipleNegativesRankingLoss` (MNRL) con escala de temperatura aprendible.
-*   **Datos de Entrada:** Tripletas generadas y curadas semánticamente (gracias al procesamiento con Gemini 2.0 en la fase de construcción del corpus).
-
-## 4. Resultados Experimentales
-
-Evaluamos la eficacia del corpus de aprendizaje contrastivo comparando el rendimiento "Zero-shot" (línea base) frente a los modelos re-entrenados (*Fine-tuned*) en el dominio legal.
-
-Todas las métricas se reportan sobre el conjunto de prueba `legalspanish-eval` (60k *queries*).
-
-### Resumen de Impacto (Performance Gains)
-
-La siguiente tabla destaca la mejora en las métricas principales de recuperación (**NDCG@10** y **MRR@10**) tras el entrenamiento contrastivo.
-
-| Modelo | Estado | NDCG@10 | MRR@10 | Accuracy@1 |
-| :--- | :--- | :---: | :---: | :---: |
-| **Multilingual E5-Large** | *Base* | 0.8296 | 0.8078 | 0.7594 |
-| | **Fine-tuned** | **0.8870** | **0.8709** | **0.8351** |
-| | *Mejora* | *+5.74%* | *+6.31%* | *+7.57%* |
-| | | | | |
-| **BGE-M3** | *Base* | 0.8127 | 0.7901 | 0.7407 |
-| | **Fine-tuned** | **0.9066** | **0.8927** | **0.8612** |
-| | *Mejora* | *+9.39%* | *+10.26%* | *+12.05%* |
-| | | | | |
-| **Gemma Embeddings** | *Base* | 0.8801 | 0.8627 | 0.8228 |
-| | **Fine-tuned** | **0.9438** | **0.9325** | **0.9060** |
-| | *Mejora* | *+6.37%* | *+6.98%* | *+8.32%* |
-
-
-### Análisis de los Resultados
-
-1.  **Mejor Desempeño Global:** Gemma Embeddings (Fine-tuned) obtiene los mejores resultados en  tareas de recuperación  (**NDCG@10 de 0.94**).
-2.  **Mayor Capacidad de Aprendizaje:** BGE-M3 presenta la evolución más notable tras el ajuste (+12.05 pp en Accuracy@1). A pesar de un inicio más bajo, su arquitectura demostró ser la más eficiente asimilando la terminología jurídica del corpus.
-3.  **Efectividad del Corpus:** El incremento generalizado de rendimiento en todas las métricas y modelos confirma que los datos de entrenamiento aportan la señal semántica necesaria para especializar modelos genéricos en la parte legal en español.
+> **TripLegal-CL: A Multi-Jurisdictional Spanish Legal Corpus for Contrastive Training of Dense Retrieval Models**
+>
+> Wilfredo Ivan Martel Socola, Christian Raul Salamea Palacios
+>
+> Grupo de Investigación en Interacción, Robótica y Automática (GIIRA)
 
 ---
 
-### Desglose Detallado por Modelo
+## Overview
 
-A continuación se presentan las métricas completas (Accuracy, Precision, Recall, NDCG, MRR, MAP).
+TripLegal-CL is a multi-jurisdictional Spanish legal corpus of 592,382 contrastive instances derived from 148,637 publicly available judicial and normative documents across six Latin-American jurisdictions (Ecuador, Colombia, Mexico, Peru, Bolivia) and the Inter-American Court of Human Rights. The corpus is designed for contrastive training of dense bi-encoder retrieval models.
 
-#### 1. Multilingual E5-Large
-Comparativa entre el modelo original y `wilfredomartel/multilingual-e5-large-es-legal-v2`.
+---
 
-| Métrica | Base (Zero-shot) | Fine-tuned (Legal) | Δ (Dif) |
-| :--- | :---: | :---: | :---: |
-| **Accuracy@1** | 0.7594 | **0.8351** | +0.0757 |
-| **Accuracy@5** | 0.8699 | **0.9172** | +0.0473 |
-| **NDCG@10** | 0.8296 | **0.8870** | +0.0574 |
-| **MRR@10** | 0.8078 | **0.8709** | +0.0631 |
-| **MAP@100** | 0.8106 | **0.8727** | +0.0621 |
+## Requirements
 
-#### 2. BAAI BGE-M3
-Comparativa entre el modelo original y `wilfredomartel/bge-m3-es-legal-v3`. Este modelo mostró la adaptación más drástica al dominio.
+- **Google Colab**: All notebooks are designed to run on Google Colab.
+- **Hugging Face token**: You need a valid Hugging Face token to download the pre-trained models. Paste your token when prompted in each notebook.
+- **Dataset access**: TripLegal-CL must be requested before running the experiments. The corpus is hosted on Hugging Face as [`wilfredomartel/TripLegal-CL`](https://huggingface.co/datasets/wilfredomartel/TripLegal-CL) and is available upon request.
 
-| Métrica | Base (Zero-shot) | Fine-tuned (Legal) | Δ (Dif) |
-| :--- | :---: | :---: | :---: |
-| **Accuracy@1** | 0.7407 | **0.8612** | +0.1205 |
-| **Accuracy@5** | 0.8544 | **0.9333** | +0.0789 |
-| **NDCG@10** | 0.8127 | **0.9066** | +0.0939 |
-| **MRR@10** | 0.7901 | **0.8927** | +0.1026 |
-| **MAP@100** | 0.7930 | **0.8942** | +0.1012 |
+---
 
-#### 3. Google Gemma Embeddings
-Comparativa entre el modelo original y `wilfredomartel/embeddinggemma-300m-legal-spanish-100k`. Este modelo obtiene los mejores resultados en  tareas de recuperación  (**NDCG@10 de 0.94**)
+## Repository Structure
 
-| Métrica | Base (Zero-shot) | Fine-tuned (Legal) | Δ (Dif) |
-| :--- | :---: | :---: | :---: |
-| **Accuracy@1** | 0.8228 | **0.9060** | +0.0832 |
-| **Accuracy@5** | 0.9140 | **0.9663** | +0.0523 |
-| **NDCG@10** | 0.8801 | **0.9438** | +0.0637 |
-| **MRR@10** | 0.8627 | **0.9325** | +0.0698 |
-| **MAP@100** | 0.8645 | **0.9333** | +0.0688 |
+```
+├── Phase 0_ DataCleaning/
+├── Phase 1_ Baseline model Evaluation/
+├── Phase 2_ FineTuning/
+├── Phase 3_ Finetuning Evaluation/
+├── Embedding-based similarity analysis/
+└── README.md
+```
 
+### Phase 0: Data Cleaning (optional)
 
-## 5. Cita
-Si utiliza TripLegal-CL o reproduce estos experimentos, por favor cite nuestro trabajo:
+Contains the Google Colab notebook with the full procedure for cleaning the raw LLM-generated corpus. This includes length threshold filtering, structural integrity checks, cardinality control, and duplicate removal. This phase has already been executed and the clean corpus is available on Hugging Face; the notebook is provided for reproducibility purposes only.
 
+### Phase 1: Baseline Model Evaluation
+
+Contains the Google Colab notebook for evaluating the three multilingual bi-encoder models **before** contrastive fine-tuning. The baseline models (multilingual E5-large, BGE-M3, and EmbeddingGemma-300M) are evaluated on the `legalspanish-eval-60kq-120kd` benchmark with 60,000 queries and a 120,000-document candidate corpus.
+
+### Phase 2: Fine-Tuning
+
+Contains the Google Colab notebook for contrastive fine-tuning of each baseline model using 300,000 (query, positive) pairs from TripLegal-CL. Training uses CachedMultipleNegativesRankingLoss with the hyperparameters described in the paper.
+
+### Phase 3: Fine-Tuning Evaluation
+
+Contains the Google Colab notebook for evaluating the fine-tuned models on the same `legalspanish-eval-60kq-120kd` benchmark used in Phase 1, ensuring a fair comparison under identical conditions.
+
+### Embedding-based Similarity Analysis
+
+Contains the Google Colab notebook for computing and visualizing the pairwise cosine similarity distributions between queries and their associated passages (grounded positives and hard negatives) over a random sample of 50,000 instances from TripLegal-CL.
+
+---
+
+## How to Reproduce
+
+1. **Request access** to TripLegal-CL on [Hugging Face](https://huggingface.co/datasets/wilfredomartel/TripLegal-CL).
+2. **Get your Hugging Face token** from [https://huggingface.co/settings/tokens](https://huggingface.co/settings/tokens).
+3. **Open each notebook** in Google Colab (follow the order: Phase 0 → Phase 1 → Phase 2 → Phase 3).
+4. **Paste your token** when prompted to download the models and dataset.
+5. Run all cells sequentially.
+
+---
+
+## Results
+
+| Model | Acc@1 | Acc@10 | nDCG@10 | MRR@10 | MAP@100 |
+|---|---|---|---|---|---|
+| **Baseline** | | | | | |
+| multilingual E5-large | 0.768 | 0.901 | 0.836 | 0.815 | 0.817 |
+| BGE-M3 | 0.746 | 0.885 | 0.816 | 0.794 | 0.797 |
+| EmbeddingGemma-300M | 0.828 | 0.934 | 0.883 | 0.867 | 0.869 |
+| **After fine-tuning with TripLegal-CL** | | | | | |
+| multilingual-e5-TripLegalCL-300k | 0.927 | 0.987 | 0.958 | 0.949 | 0.949 |
+| bge-m3-TripLegalCL-300k | 0.928 | 0.986 | 0.959 | 0.949 | 0.950 |
+| GemmaEmbedding-TripLegalCL-300k | 0.932 | 0.989 | 0.962 | 0.954 | 0.954 |
+
+---
+
+## Citation
+
+If you use TripLegal-CL or this codebase in your research, please cite:
+
+```bibtex
+@article{martel2025triplegal,
+  title={TripLegal-CL: A Multi-Jurisdictional Spanish Legal Corpus for Contrastive Training of Dense Retrieval Models},
+  author={Martel Socola, Wilfredo Ivan and Salamea Palacios, Christian Raul},
+  journal={Procesamiento del Lenguaje Natural (SEPLN)},
+  year={2025}
+}
+```
+
+---
+
+## License
+
+Please refer to the dataset license on Hugging Face for terms of use.
+
+---
+
+## Contact
+
+- Wilfredo Ivan Martel Socola — wmartel@est.ups.edu.ec
+- Christian Raul Salamea Palacios — csalamea@ups.edu.ec
